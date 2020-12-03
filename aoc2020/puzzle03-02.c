@@ -19,32 +19,14 @@ int main()
 	const int width = 31;
 	int line_no = 0;
 	while (!feof(file)) {
-		fgets(line, 126, file);
+		if(!fgets(line, 126, file)) {
+			break;
+		}
 		if ((line_no % 2) == 0 && line[line_no / 2 % width] == '#') ++trees2d;
 		if (line[line_no % width] == '#') ++trees1;
 		if (line[line_no * 3 % width] == '#') ++trees3;
 		if (line[line_no * 5 % width] == '#') ++trees5;
 		if (line[line_no * 7 % width] == '#') ++trees7;
-		/*
-		printf(
-			"%3d: %3d:%c:%-2d %3d:%c:%-2d %3d:%c:%-2d %3d:%c:%-2d %3d:%c:%-2d\n", 
-			line_no, 
-			line_no % width, line[line_no % width], trees1,
-			line_no * 3 % width, line[line_no * 3 % width], trees3,
-			line_no * 5 % width, line[line_no * 5 % width], trees5,
-			line_no * 7 % width, line[line_no * 7 % width], trees7,
-			line_no / 2 % width, line_no % 2 == 0 ? line[line_no / 2 % width] : '-', trees2d
-		);
-		*/
-		strncpy_s(line2, 128, line, width);
-		line2[width] = 0;
-		//printf("%s\n", line2);
-		if ((line_no % 2) == 0) {
-			line2[line_no / 2 % width] = line[line_no / 2 % width] == '#' ? 'X' : 'O';
-		} else {
-			line2[line_no / 2 % width] = '-';
-		}
-		printf("%3d: %s\n", line_no, line2);
 		++line_no;
 	}
 	printf("Trees 1x1: %ld\n", trees1);
