@@ -14,24 +14,6 @@ public class Day7 {
             this.inner = inner;
             this.quantity = quantity;
         }
-
-        @Override
-        public boolean equals( Object o ) {
-            if ( this == o ) {
-                return true;
-            }
-            if ( o == null || getClass() != o.getClass() ) {
-                return false;
-            }
-            Rule rule = (Rule) o;
-            return outer.equals( rule.outer ) &&
-                    inner.equals( rule.inner );
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash( outer, inner );
-        }
     }
 
     private Map<String, List<Rule>> innerMap = new HashMap<>();
