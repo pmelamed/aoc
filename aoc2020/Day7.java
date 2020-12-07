@@ -34,7 +34,6 @@ public class Day7 {
         }
     }
 
-    private Set<Rule> rules = new HashSet<>();
     private Map<String, List<Rule>> innerMap = new HashMap<>();
     private Map<String, List<Rule>> outerMap = new HashMap<>();
 
@@ -88,11 +87,8 @@ public class Day7 {
     }
 
     private void register( Rule rule ) {
-        if ( !rules.contains( rule ) ) {
-            rules.add( rule );
-            innerMap.computeIfAbsent( rule.inner, key -> new ArrayList<>() ).add( rule );
-            outerMap.computeIfAbsent( rule.outer, key -> new ArrayList<>() ).add( rule );
-        }
+        innerMap.computeIfAbsent( rule.inner, key -> new ArrayList<>() ).add( rule );
+        outerMap.computeIfAbsent( rule.outer, key -> new ArrayList<>() ).add( rule );
     }
 
     private int getInners( String color ) {
