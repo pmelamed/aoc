@@ -1,12 +1,9 @@
-import org.w3c.dom.css.Counter;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.ToIntBiFunction;
 
 public class Day11 {
 
@@ -62,6 +59,7 @@ public class Day11 {
         }
         return countBusy();
     }
+
     private boolean iterate( Counter counter, int tolerance ) {
         boolean changed = false;
         for ( int row = 1; row <= rows; ++row ) {
@@ -85,9 +83,7 @@ public class Day11 {
 
     private void copyState( char[][] src, char[][] dst ) {
         for ( int row = 0; row < src.length; ++row ) {
-            for ( int col = 0; col < src[0].length; ++col ) {
-                dst[row][col] = src[row][col];
-            }
+            System.arraycopy( src[row], 0, dst[row], 0, src[0].length );
         }
     }
 
@@ -142,6 +138,6 @@ public class Day11 {
     }
 
     interface Counter {
-        int count(int row, int col);
+        int count( int row, int col );
     }
 }
