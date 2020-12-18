@@ -165,9 +165,9 @@ public class Day18 {
 
     private static void assertResult( String test, long result, long expected ) {
         if ( result != expected ) {
-            debug( "Test %s failed: expected = %d, actual = %d", test, expected, result );
+            debug( "Failed: expr = %s, expected = %d, actual = %d", test, expected, result );
         } else {
-            debug( "Test %s is ok: expected = %d, actual = %d", test, expected, result );
+            debug( "OK: expr = %s, expected = %d, actual = %d", test, expected, result );
         }
     }
 }
