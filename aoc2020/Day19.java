@@ -54,15 +54,10 @@ public class Day19 {
     }
 
     private long task2() {
-        rules.remove( 0 );
-        rules.remove( 8 );
-        rules.remove( 11 );
         Set<String> all42 = rules.get( 42 ).getAll();
         Set<String> all31 = rules.get( 31 ).getAll();
         Rule0 rule0 = new Rule0( all42, all31 );
-        Utils.debug( "Rule42: %s", all42 );
-        Utils.debug( "Rule31: %s", all31 );
-        return messages.stream().peek( s -> Utils.debug( "> %s", s ) ).filter( rule0::matches ).count();
+        return messages.stream().filter( rule0::matches ).count();
     }
 
     interface Rule {
@@ -94,7 +89,7 @@ public class Day19 {
         public Set<String> getAll() {
             if ( matches == null ) {
                 String[] subRules = rule.split( "\\|" );
-                matches = new TreeSet<>( parseSubRule( subRules[0] ) );
+                matches = new HashSet<>( parseSubRule( subRules[0] ) );
                 if ( subRules.length > 1 ) {
                     matches.addAll( parseSubRule( subRules[1] ) );
                 }
@@ -104,12 +99,12 @@ public class Day19 {
 
         private Set<String> parseSubRule( String subRule ) {
             String[] parents = subRule.trim().split( " " );
-            Set<String> first = new TreeSet<>( rules.get( Integer.parseInt( parents[0] ) ).getAll() );
+            Set<String> first = rules.get( Integer.parseInt( parents[0] ) ).getAll();
             if ( parents.length == 1 ) {
                 return first;
             }
-            Set<String> second = new TreeSet<>( rules.get( Integer.parseInt( parents[1] ) ).getAll() );
-            Set<String> result = new TreeSet<>();
+            Set<String> second = rules.get( Integer.parseInt( parents[1] ) ).getAll();
+            Set<String> result = new HashSet<>();
             for ( String firstStr : first ) {
                 for ( String secondStr : second ) {
                     result.add( firstStr + secondStr );
