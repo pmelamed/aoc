@@ -83,8 +83,8 @@ public class Day21 implements AocDay<Integer, String> {
 
     public String task2() {
         return allergensMap.values()
-                    .stream()
-                    .map( set -> set.iterator().next() )
-                    .collect( Collectors.joining( "," ));
+                           .stream()
+                           .map( set -> set.iterator().next() )
+                           .collect( Collectors.joining( "," ) );
     }
 }
