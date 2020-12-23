@@ -1,7 +1,3 @@
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -12,7 +8,7 @@ public class Day23 implements AocDay<String, Long> {
     public static void main( String[] args ) {
         try {
             executeTasks( "389125467", "67384529", 149245887792L );
-            executeTasks( "523764819", null, null );
+            executeTasks( "523764819", "49576328", 511780369955L );
         } catch ( Throwable e ) {
             e.printStackTrace();
         }
@@ -32,73 +28,56 @@ public class Day23 implements AocDay<String, Long> {
     }
 
     public String task1() {
-        Cup[] cupsMap = IntStream.range( 0, 10 )
-                                 .mapToObj( Cup::new )
-                                 .toArray( Cup[]::new );
-        TreeSet<Integer> cupsInCircle = buildInitialSet( 9 );
-        Cup current = buildInitialCircle( cupsMap, initial, 0 );
-
-        for ( int move = 0; move < 100; ++move ) {
-            makeMove( current, cupsMap, cupsInCircle);
-            current = current.next;
-        }
-
-        return renderCircle( cupsMap[1].next, 8 );
+        Cup cup1 = playGame( 9, 100 );
+        return renderCircle( cup1.next, 8 );
     }
 
     public Long task2() {
-        Cup[] cupsMap = IntStream.range( 0, 1_000_001 )
-                                 .mapToObj( Cup::new )
-                                 .toArray( Cup[]::new );
-        TreeSet<Integer> cupsInCircle = buildInitialSet( 1_000_000 );
-        Cup current = buildInitialCircle( cupsMap, initial, 1_000_000 );
-
-        for ( int move = 0; move < 10_000_000; ++move ) {
-            makeMove( current, cupsMap, cupsInCircle);
-            current = current.next;
-        }
-
-
-        long value1 = cupsMap[1].next.label;
-        long value2 = cupsMap[1].next.next.label;
-        return value1 * value2;
+        Cup cup1 = playGame( 1_000_000, 10_000_000 );
+        return ( (long) cup1.next.label ) * cup1.next.next.label;
     }
 
-    private void makeMove( Cup current, Cup[] cupsMap, TreeSet<Integer> cupsInCircle ) {
-        // Pick up cups
-        Cup cup = current.next;
-        Cup firstPickedUp = cup;
-        Cup lastPickedUp = cup;
-        int[] skipped = new int[3];
-        for ( int skip = 0; skip < 3; ++skip, cup = cup.next ) {
-            skipped[skip] = cup.label;
-            cupsInCircle.remove( cup.label );
-            lastPickedUp = cup;
+    private Cup playGame( int max, int moves ) {
+        Cup[] cupsMap = IntStream.range( 0, max + 1 )
+                                 .mapToObj( Cup::new )
+                                 .toArray( Cup[]::new );
+        Cup current = buildInitialCircle( cupsMap, initial, max );
+
+        for ( int move = 0; move < moves; ++move ) {
+            makeMove( current, cupsMap, max );
+            current = current.next;
         }
-        current.next = cup;
-//            Utils.debug(
-//                    "Removed <%s> Last removed: <%d> Rest of circle: <%s>",
-//                    renderCircle( firstPickedUp, 3 ),
-//                    lastPickedUp.label,
-//                    renderCircle( current, 7 )
-//            );
+        return cupsMap[1];
+    }
+
+    private void makeMove( Cup current, Cup[] cupsMap, int max ) {
+        // Pick up cups
+        Cup firstPickedUp = current.next;
+        Cup lastPickedUp = current.next.next.next;
+        current.next = lastPickedUp.next;
 
         // Find destination
-        Cup destination = cupsMap[
-                Optional.ofNullable( cupsInCircle.lower( current.label ) )
-                        .orElse( cupsInCircle.last() )
-                ];
-//            Utils.debug(
-//                    "Destination <%d>",
-//                    destination.label
-//            );
+        Cup destination = cupsMap[getDestination(
+                current.label,
+                max,
+                firstPickedUp.label,
+                firstPickedUp.next.label,
+                lastPickedUp.label
+        )];
         Cup next = destination.next;
         destination.next = firstPickedUp;
         lastPickedUp.next = next;
+    }
 
-        // Restore set
-        Arrays.stream( skipped ).forEach( cupsInCircle::add );
-//            Utils.debug( "%s", renderCircle( current, 9 ) );
+    private int getDestination( int current, int max, int skipped1, int skipped2, int skipped3 ) {
+        do {
+            if ( current == 1 ) {
+                current = max;
+            } else {
+                --current;
+            }
+        } while ( current == skipped1 || current == skipped2 || current == skipped3 );
+        return current;
     }
 
     private Cup buildInitialCircle( Cup[] cups, String config, int max ) {
@@ -120,12 +99,6 @@ public class Day23 implements AocDay<String, Long> {
         }
         prevCup.next = firstCup;
         return firstCup;
-    }
-
-    private TreeSet<Integer> buildInitialSet( int max ) {
-        return IntStream.range( 1, max + 1 )
-                        .boxed()
-                        .collect( Collectors.toCollection( TreeSet::new ) );
     }
 
     private String renderCircle( Cup first, int length ) {
