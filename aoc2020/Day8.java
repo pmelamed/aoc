@@ -1,7 +1,10 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Day8 {
@@ -30,12 +33,11 @@ public class Day8 {
         }
     }
 
-    private List<Instruction> program = new ArrayList<>();
+    private List<Instruction> program;
 
     public static void main( String[] args ) {
         try {
             new Day8( "c:\\tmp\\sample08-1.dat" ).doTasks();
-            // new Day8( "c:\\tmp\\sample08-2.dat" ).doTasks();
             new Day8( "c:\\tmp\\input08.dat" ).doTasks();
         } catch ( Throwable e ) {
             e.printStackTrace();
@@ -53,32 +55,13 @@ public class Day8 {
     }
 
     private int task1() {
-        Set<Integer> visited = new HashSet<>();
-        int accum = 0;
-        int ip = 0;
-        while ( !visited.contains( ip ) ) {
-            visited.add( ip );
-            final Instruction op = program.get( ip );
-            switch ( op.operation ) {
-                case "nop":
-                    ++ip;
-                    break;
-                case "acc":
-                    accum += op.operand;
-                    ++ip;
-                    break;
-                case "jmp":
-                    ip += op.operand;
-                    break;
-            }
-        }
-        return accum;
+        return dryRun( true ).orElse( -1 );
     }
 
     private int task2() {
         for ( Instruction instruction : program ) {
             if ( instruction.swap() ) {
-                OptionalInt result = dryRun();
+                OptionalInt result = dryRun( false );
                 instruction.swap();
                 if ( result.isPresent() ) {
                     return result.getAsInt();
@@ -88,7 +71,7 @@ public class Day8 {
         return 0;
     }
 
-    private OptionalInt dryRun() {
+    private OptionalInt dryRun( boolean retAccum ) {
         Set<Integer> visited = new HashSet<>();
         int accum = 0;
         int ip = 0;
@@ -108,7 +91,7 @@ public class Day8 {
                     break;
             }
         }
-        return ip >= program.size() ? OptionalInt.of( accum ) : OptionalInt.empty();
+        return retAccum || ip >= program.size() ? OptionalInt.of( accum ) : OptionalInt.empty();
     }
 
 
